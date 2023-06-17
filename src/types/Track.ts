@@ -1,7 +1,7 @@
 type Track = {
     id: number,
     url: string,
-    title: string
+    title: string,
 };
 
 export default Track;

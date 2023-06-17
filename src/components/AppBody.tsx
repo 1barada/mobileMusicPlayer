@@ -15,6 +15,10 @@ const AppBody = () => {
         dispatch(loadTracks());
     }, []);
 
+    // useEffect(() => {
+    //     tracks.forEach(track => console.log(track.url))
+    // }, [tracks]);
+
     if (isLoading)
     return (
         <View style={styles.container}>

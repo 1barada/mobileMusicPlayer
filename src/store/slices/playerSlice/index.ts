@@ -1,13 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
 import Track from "../../../types/Track";
 import loadTracks from "./thunk/loadTracks";
+import Sound from "react-native-sound";
 
 export type PlayerSliceType = {
     isLoading: boolean,
     isPlayerOpen: boolean,
     tracks: Track[],
     tracksQueue: Track[],
-    currentTrack: Track | null
+    currentTrack: Track | null,
 };
 
 export const initialState: PlayerSliceType = {
@@ -15,7 +16,7 @@ export const initialState: PlayerSliceType = {
     isPlayerOpen: false,
     tracks: [],
     tracksQueue: [],
-    currentTrack: null
+    currentTrack: null,
 };
 
 export const playerSlice = createSlice({
@@ -26,7 +27,7 @@ export const playerSlice = createSlice({
             state.tracksQueue = state.tracks;
             state.currentTrack = state.tracksQueue[payload];
             state.isPlayerOpen = true;
-        }
+        },
     },
     extraReducers: builder => {
         builder.addCase(loadTracks.pending, (state, action) => {
@@ -46,6 +47,6 @@ export const playerSlice = createSlice({
 });
 
 export const {
-    openPlayer
+    openPlayer,
 } = playerSlice.actions;
 export default playerSlice.reducer;

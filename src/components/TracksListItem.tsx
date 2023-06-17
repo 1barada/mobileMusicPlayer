@@ -1,4 +1,4 @@
-import { AppConfig, StyleSheet, Text, TouchableHighlight, View } from "react-native";
+import { StyleSheet, Text, TouchableHighlight, View } from "react-native";
 import Track from "../types/Track";
 import { useState } from "react";
 import {useDispatch} from 'react-redux';
