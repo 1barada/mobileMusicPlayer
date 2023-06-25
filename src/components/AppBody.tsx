@@ -1,27 +1,26 @@
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { useSelector, useDispatch } from "react-redux";
-import Player from "./Player";
 import { AppDispatch, RootState } from "../store/store";
 import { useEffect } from "react";
 import loadTracks from "../store/slices/playerSlice/thunk/loadTracks";
-import TracksList from "./TracksList";
 import { PlayerSliceType } from "../store/slices/playerSlice";
+import TracksList from "./TracksList";
+import Player from "./Player";
+
+
 
 const AppBody = () => {
-    const {isLoading, isPlayerOpen, tracks} = useSelector<RootState, PlayerSliceType>(state => state.player);
+    const {isLoading, tracks, isMiniPlayerOpen} = useSelector<RootState, PlayerSliceType>(state => state.player);
     const dispatch = useDispatch<AppDispatch>();
 
     useEffect(() => {
-        dispatch(loadTracks());
+        if (isLoading)
+            dispatch(loadTracks());
     }, []);
-
-    // useEffect(() => {
-    //     tracks.forEach(track => console.log(track.url))
-    // }, [tracks]);
 
     if (isLoading)
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, styles.loadScreen]}>
             <ActivityIndicator size='large'/>
         </View>
     );
@@ -29,7 +28,7 @@ const AppBody = () => {
     return (
         <View style={styles.container}>
             <TracksList tracks={tracks}/>
-            {isPlayerOpen && <Player/>}
+            {isMiniPlayerOpen && <Player/>}
         </View>
     );
 }
@@ -37,6 +36,10 @@ const AppBody = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    loadScreen: {
+        alignItems: 'center',
+        justifyContent: 'center'
     }
 });
  

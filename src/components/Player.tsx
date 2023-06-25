@@ -1,14 +1,19 @@
-import { useDispatch, useSelector } from "react-redux";
-import { Button, StyleSheet, Text, View } from "react-native";
-import { AppDispatch, RootState } from "../store/store";
-import { PlayerSliceType } from "../store/slices/playerSlice";
-import Sound from "react-native-sound";
 import { useEffect, useState } from "react";
+import { StyleSheet, Text, View } from "react-native";
+import Sound from "react-native-sound";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store/store";
+import { PlayerSliceType, openBigPlayer, closeBigPlayer, Repeat, nextTrack, setRepeat, setShuffle, previousTrack, setIsControllable } from "../store/slices/playerSlice";
+import MiniPlayer from "./MiniPlayer";
+import BigPlayer from "./BigPlayer";
 
 const Player = () => {
-    const [currentSound, setCurrentSound] = useState<Sound>();
-    const {tracksQueue, currentTrack} = useSelector<RootState, PlayerSliceType>(state => state.player);
+    const [currentSound, setCurrentSound] = useState<Sound | undefined>(undefined);
+    const [isMiniPlayerOpen, setIsMiniPlayerOpen] = useState<boolean>(true);
+    const [isPlaying, setIsPlaying] = useState<boolean>(false);
+    const {currentTrack, shuffle, repeat, isControllable} = useSelector<RootState, PlayerSliceType>(state => state.player); 
     const dispatch = useDispatch<AppDispatch>();
+
 
     useEffect(() => {
         if (currentSound) {
@@ -16,58 +21,141 @@ const Player = () => {
         }
 
         if (currentTrack) {
-            const sound = new Sound(currentTrack.url, '', (error) => {
+            dispatch(setIsControllable(false));
+            const sound = new Sound(currentTrack.path, '', (error) => {
                 if (error) {
-                    console.log(error);
+                    console.error(error);
                     return;
                 }
 
-                sound.play((succses) => {
-                    if (succses)
-                        console.log('track: ' + currentTrack.title);
-                    else    
+                dispatch(setIsControllable(true));
+                sound.play((succses: boolean) => {
+                    if (succses) {
+                        if (repeat === Repeat.RepeatCurrent) {
+                            currentSound?.setNumberOfLoops(-1);
+                        } else {
+                            currentSound?.setNumberOfLoops(0);
+                            dispatch(nextTrack());
+                        }
+                    }
+                    else {
                         console.error('Error: something went wrong while track is played');
+                    }
                 });
+                setIsPlaying(true);
             });
 
             setCurrentSound(sound);
         }
     }, [currentTrack]);
 
-    const playTrack = () => {
-        if (currentSound && currentSound.isLoaded()) {
-            currentSound.play();
+    useEffect(() => {
+        return () => {
+            currentSound?.release();
         }
+    }, []);
+
+    const endTrackHandler = (succses: boolean) => {
+        if (succses) {
+            if (repeat === Repeat.RepeatCurrent) {
+                currentSound?.setNumberOfLoops(-1);
+            } else {
+                currentSound?.setNumberOfLoops(0);
+                dispatch(nextTrack());
+            }
+        }
+        else {
+            console.error('Error: something went wrong while track is played');
+        }
+    }
+
+    const playPauseHandler = () => {
+        if (isPlaying) {
+            currentSound?.pause();
+        } else {
+            currentSound?.play((succses: boolean) => {
+                if (succses) {
+                    if (repeat === Repeat.RepeatCurrent) {
+                        currentSound?.setNumberOfLoops(-1);
+                    } else {
+                        currentSound?.setNumberOfLoops(0);
+                        dispatch(nextTrack());
+                    }
+                }
+                else {
+                    console.error('Error: something went wrong while track is played');
+                }
+            });
+        }
+        setIsPlaying(!isPlaying);
     };
 
-    const pauseTrack = () => {
-        if (currentSound && currentSound.isPlaying()) {
-            currentSound.pause();
-        }
-    };
+    const openBigPlayerHandler = () => {
+        dispatch(openBigPlayer());
+        setIsMiniPlayerOpen(false);
+    }
 
-    if (!currentTrack)
+    const closeBigPlayerHandler = () => {
+        dispatch(closeBigPlayer());
+        setIsMiniPlayerOpen(true);
+    }
+
+    const setRepeatHandler = () => {
+        dispatch(setRepeat());
+    }
+
+    const setShuffleHandler = () => {
+        dispatch(setShuffle());
+    }
+
+    const nextTrackHandler = () => {
+        dispatch(nextTrack());
+    }
+
+    const previousTrackHandler = () => {
+        dispatch(previousTrack());
+    }
+
+    if (!currentTrack) 
     return (
         <View style={styles.container}>
-            <Text>Error: Not chosen track</Text>
+            <Text>Error: no track chosen</Text>
         </View>
     );
     
     return (
         <View style={styles.container}>
-            <Text>{currentTrack.title}</Text>
-            <Button title="play" onPress={playTrack}/>
-            <Button title="pause" onPress={pauseTrack}/>
+            {isMiniPlayerOpen
+                ?   <MiniPlayer 
+                        currentSound={currentSound} 
+                        currentTrack={currentTrack} 
+                        isPlaying={isPlaying} 
+                        playPauseHandler={playPauseHandler}
+                        openBigPlayer={openBigPlayerHandler}
+                    />
+                :   <BigPlayer
+                        currentSound={currentSound} 
+                        currentTrack={currentTrack} 
+                        isPlaying={isPlaying} 
+                        isControllable={isControllable}
+                        repeat={repeat}
+                        shuffle={shuffle}
+                        playPauseHandler={playPauseHandler}
+                        closeBigPlayer={closeBigPlayerHandler}
+                        nextTrackHandler={nextTrackHandler}
+                        previousTrackHandler={previousTrackHandler}
+                        setRepeatHandler={setRepeatHandler}
+                        setShuffleHandler={setShuffleHandler}
+                    />
+            }
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        backgroundColor: 'yellow'     
-    }
+        flex: 1
+    }, 
 });
  
 export default Player;

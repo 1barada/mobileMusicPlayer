@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import {PermissionsAndroid, SafeAreaView, StyleSheet} from 'react-native';
 import Sound from 'react-native-sound';
 import { Provider } from 'react-redux';
@@ -44,7 +44,8 @@ function App(): JSX.Element {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        flex: 1,
+        backgroundColor: '#222329'
     }
 });
 
