@@ -6,6 +6,12 @@ import noTrackImage from '../assets/images/icons/images.jpg';
 import ProgressBar from "./ProgressBar";
 import { Repeat } from "../store/slices/playerSlice";
 import SliderProgressBar from "./SliderProgressBar";
+import repeatButtonIcon from '../assets/images/icons/repeatButton.jpg';
+import previousButtonIcon from '../assets/images/icons/previousButton.jpg';
+import playButtonIcon from '../assets/images/icons/playButton.jpg';
+import pauseButtonIcon from '../assets/images/icons/pauseButton.jpg';
+import nextButtonIcon from '../assets/images/icons/nextButton.jpg';
+import shuffleButtonIcon from '../assets/images/icons/shuffleButton.jpg';
 
 type BigPlayerProps = {
     currentSound: Sound | undefined,
@@ -53,24 +59,26 @@ const BigPlayer = ({
             </View>
             <SliderProgressBar sound={currentSound}/>
             <View style={styles.controllers}>
-                <Pressable onPress={setRepeatHandler}>
-                    <Text style={styles.controllerText}>
-                        {Repeat.NoRepeat === repeat ? 'NOREPEAT' : 
-                        Repeat.RepeatCurrent === repeat ? 'REPEATCURRENT' : 
-                        'REPEATQUEUE'}
-                    </Text>
+                <Pressable style={styles.side} onPress={setRepeatHandler}>
+                    <Image style={styles.sideButton} source={repeatButtonIcon}/>
+                    {repeat === Repeat.NoRepeat ? <></>
+                        :   repeat === Repeat.RepeatCurrent
+                            ?   <Text style={styles.repeatText}>curr</Text>
+                            :   <Text style={styles.repeatText}>queue</Text>
+                    }
                 </Pressable>
-                <Pressable onPress={previousTrackHandler} disabled={!isControllable}>
-                    <Text style={styles.controllerText}>PREVIOS</Text>
+                <Pressable style={styles.previousNextButton} onPress={previousTrackHandler} disabled={!isControllable}>
+                    <Image style={styles.previousNextButtonIcon} source={previousButtonIcon}/>
                 </Pressable>
                 <Pressable onPress={playPauseHandler}>
-                    <Text style={styles.controllerText}>{isPlaying ? 'PAUSE' : 'PLAY'}</Text>
+                    <Image source={isPlaying ? pauseButtonIcon : playButtonIcon}/>
                 </Pressable>
-                <Pressable onPress={nextTrackHandler}>
-                    <Text style={styles.controllerText} disabled={!isControllable}>NEXT</Text>
+                <Pressable style={styles.previousNextButton} onPress={nextTrackHandler}>
+                    <Image style={styles.previousNextButtonIcon} source={nextButtonIcon}/>
                 </Pressable>
-                <Pressable onPress={setShuffleHandler}>
-                    <Text style={styles.controllerText}>{shuffle ? 'SHUFFLE' : 'NOSHUFFLE'}</Text>
+                <Pressable style={styles.side} onPress={setShuffleHandler}>
+                    <Image style={styles.sideButton} source={shuffleButtonIcon}/>
+                    {shuffle && <Text style={styles.repeatText}>shuffle</Text>}
                 </Pressable>
             </View>
         </View>
@@ -117,9 +125,12 @@ const styles = StyleSheet.create({
         fontSize: 12
     },
     controllers: {
+        backgroundColor: '#000000',
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 25,
         flex: 2,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-around',
         flexDirection: 'row',
         gap: 20
     },
@@ -129,7 +140,24 @@ const styles = StyleSheet.create({
         justifyContent: 'center'
     },
     controllerText: {
+        color: 'white',
+    },
+    previousNextButton: {
+        
+    },
+    previousNextButtonIcon: {
+        width: 30,
+        height: 30,
+    },
+    sideButton: {
+        width: 30,
+        height: 30
+    },
+    repeatText: {
         color: 'white'
+    },
+    side: {
+        alignItems: 'center'
     }
 });
  

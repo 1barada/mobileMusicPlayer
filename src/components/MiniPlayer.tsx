@@ -2,8 +2,8 @@ import { View, Pressable, Text, Image, StyleSheet } from "react-native";
 import ProgressBar from "./ProgressBar";
 import Sound from "react-native-sound";
 import Track from "../types/Track";
-import pauseButtonIcon from '../assets/images/icons/pauseButton.png';
-import playButtonIcon from '../assets/images/icons/playButton.png';
+import pauseButtonIcon from '../assets/images/icons/miniPauseButton.png';
+import playButtonIcon from '../assets/images/icons/miniPlayButton.png';
 
 type MiniPlayerProps = {
     currentSound: Sound | undefined,

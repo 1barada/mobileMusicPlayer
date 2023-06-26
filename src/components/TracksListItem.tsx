@@ -3,7 +3,7 @@ import Track from "../types/Track";
 import { useState } from "react";
 import {useDispatch, useSelector} from 'react-redux';
 import { AppDispatch, RootState } from "../store/store";
-import { PlayerSliceType, openMiniPlayer, setCurrentTrack } from "../store/slices/playerSlice";
+import { PlayerSliceType, openMiniPlayer, setCurrentTrackHandler } from "../store/slices/playerSlice";
 import noTrackImage from '../assets/images/icons/images.jpg';
 import durationToString from "../utils/durationToString";
 
@@ -18,7 +18,7 @@ const TracksListItem = ({track}: TracksListItemProps) => {
 
     const onPress = () => {
         if (isMiniPlayerOpen) {
-            dispatch(setCurrentTrack(track.path));
+            dispatch(setCurrentTrackHandler(track.path));
         } else {
             dispatch(openMiniPlayer(track.path))
         }
@@ -43,7 +43,7 @@ const TracksListItem = ({track}: TracksListItemProps) => {
                     </View>
                     {currentTrack?.path === track.path
                         ?   <Text style={styles.selected}>▶</Text>
-                        :   <Text style={styles.duration}>{durationToString(track.duration)}</Text>
+                        :   <Text style={styles.duration}>{durationToString(track.duration || 0)}</Text>
                     }
                 </View>
             </TouchableHighlight>

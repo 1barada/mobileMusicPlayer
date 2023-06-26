@@ -29,19 +29,7 @@ const Player = () => {
                 }
 
                 dispatch(setIsControllable(true));
-                sound.play((succses: boolean) => {
-                    if (succses) {
-                        if (repeat === Repeat.RepeatCurrent) {
-                            currentSound?.setNumberOfLoops(-1);
-                        } else {
-                            currentSound?.setNumberOfLoops(0);
-                            dispatch(nextTrack());
-                        }
-                    }
-                    else {
-                        console.error('Error: something went wrong while track is played');
-                    }
-                });
+                sound.play(endTrackHandler);
                 setIsPlaying(true);
             });
 
@@ -55,12 +43,26 @@ const Player = () => {
         }
     }, []);
 
+    useEffect(() => {
+        switch(repeat) {
+            case Repeat.NoRepeat:
+                currentSound?.setNumberOfLoops(0).play();
+                break;
+            case Repeat.RepeatCurrent:
+                currentSound?.setNumberOfLoops(-1).play();
+                break;
+            case Repeat.RepeatQueue:
+                currentSound?.setNumberOfLoops(0).play();
+                break;
+        }
+    }, [repeat]);
+
     const endTrackHandler = (succses: boolean) => {
         if (succses) {
             if (repeat === Repeat.RepeatCurrent) {
-                currentSound?.setNumberOfLoops(-1);
+                currentSound?.setNumberOfLoops(-1).play();
             } else {
-                currentSound?.setNumberOfLoops(0);
+                currentSound?.setNumberOfLoops(0).play();
                 dispatch(nextTrack());
             }
         }
@@ -73,19 +75,7 @@ const Player = () => {
         if (isPlaying) {
             currentSound?.pause();
         } else {
-            currentSound?.play((succses: boolean) => {
-                if (succses) {
-                    if (repeat === Repeat.RepeatCurrent) {
-                        currentSound?.setNumberOfLoops(-1);
-                    } else {
-                        currentSound?.setNumberOfLoops(0);
-                        dispatch(nextTrack());
-                    }
-                }
-                else {
-                    console.error('Error: something went wrong while track is played');
-                }
-            });
+            currentSound?.play(endTrackHandler);
         }
         setIsPlaying(!isPlaying);
     };

@@ -51,7 +51,8 @@ export const playerSlice = createSlice({
         closeBigPlayer(state) {
             state.isBigPlayerOpen = false;
         },
-        setCurrentTrack(state, {payload}: {payload: string}) {
+        setCurrentTrackHandler(state, {payload}: {payload: string}) {
+            state.currentTrack = undefined;
             state.currentTrack = state.tracks.find((track) => track.path === payload);
         },
         setShuffle(state) {
@@ -67,7 +68,7 @@ export const playerSlice = createSlice({
             const currentTrack = state.currentTrack;
             if (state.isControllable && currentTrack) {
                 const index = state.tracksQueue.findIndex((track) => track.path === currentTrack.path)
-                if (state.tracksQueue.length === index - 1) {
+                if (state.tracksQueue.length - 1 === index) {
                     if (state.repeat === Repeat.RepeatQueue) {
                         if (state.shuffle) {
                             state.tracksQueue = shuffleTracks(state.tracks);
@@ -84,7 +85,6 @@ export const playerSlice = createSlice({
         previousTrack(state) {
             const currentTrack = state.currentTrack;
             if (state.isControllable && currentTrack) {
-                //state.tracksQueue.forEach(track => console.log(track.path))
                 const index = state.tracksQueue.findIndex((track) => track.path === currentTrack.path)
                 if (index !== 0) {
                     state.currentTrack = state.tracksQueue[index - 1];
@@ -127,7 +127,7 @@ export const {
     openMiniPlayer,
     openBigPlayer,
     closeBigPlayer,
-    setCurrentTrack,
+    setCurrentTrackHandler,
     setShuffle, 
     nextTrack,
     previousTrack,
